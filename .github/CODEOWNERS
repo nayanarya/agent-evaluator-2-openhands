@@ -1,0 +1,17 @@
+# Code Owners
+# This file defines who owns which parts of the codebase
+
+# Default owner for everything
+* @openhands
+
+# Security and compliance
+.github/ @openhands-security
+SECURITY.md @openhands-security
+.gitleaks.toml @openhands-security
+
+# Application code
+app.py @openhands-dev
+templates/ @openhands-dev
+
+# Documentation
+README.md @openhands-docs

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Model Comparison</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 900px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .agents-info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .agent-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .agent-card h3 {
+            color: #444;
+            margin-bottom: 8px;
+        }
+        
+        .agent-card p {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .input-section {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .results.active {
+            display: block;
+        }
+        
+        .result-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .result-card.winner {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-left: 5px solid #28a745;
+        }
+        
+        .model-name {
+            font-weight: 700;
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .badge-winner {
+            background: #28a745;
+            color: white;
+        }
+        
+        .response-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            line-height: 1.6;
+            color: #444;
+        }
+        
+        .evaluation-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .evaluation-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .evaluation-content {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            line-height: 1.7;
+        }
+        
+        .model-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .model-comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Model Comparison</h1>
+        <p class="subtitle">Compare responses from GPT-5.1-Codex, SWE 1.5 Fast, and get evaluated by Claude Sonnet 4.5</p>
+        
+        <div class="agents-info">
+            <div class="agent-card">
+                <h3>Agent 1</h3>
+                <p>GPT-5.1-Codex & SWE 1.5 Fast</p>
+            </div>
+            <div class="agent-card">
+                <h3>Agent 2</h3>
+                <p>Claude Sonnet 4.5 Evaluator</p>
+            </div>
+        </div>
+        
+        <div class="input-section">
+            <label for="userInput">Enter your prompt:</label>
+            <textarea id="userInput" placeholder="Type your question or task here..."></textarea>
+        </div>
+        
+        <button id="submitBtn" onclick="submitPrompt()">🚀 Compare Models</button>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p class="loading-text">Agent 1 is generating responses...</p>
+        </div>
+        
+        <div class="results" id="results">
+            <div class="model-comparison">
+                <div class="result-card" id="gptCard">
+                    <div class="model-name">
+                        GPT-5.1-Codex
+                    </div>
+                    <div class="response-content" id="gptResponse"></div>
+                </div>
+                
+                <div class="result-card" id="sweCard">
+                    <div class="model-name">
+                        SWE 1.5 Fast
+                    </div>
+                    <div class="response-content" id="sweResponse"></div>
+                </div>
+            </div>
+            
+            <div class="evaluation-section">
+                <div class="evaluation-title">
+                    🏆 Agent 2 Evaluation (Claude Sonnet 4.5)
+                </div>
+                <div class="evaluation-content" id="evaluationResult"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        async function submitPrompt() {
+            const userInput = document.getElementById('userInput').value.trim();
+            
+            if (!userInput) {
+                alert('Please enter a prompt');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            const loadingText = document.querySelector('.loading-text');
+            
+            submitBtn.disabled = true;
+            loading.classList.add('active');
+            results.classList.remove('active');
+            
+            // Reset winner classes
+            document.getElementById('gptCard').classList.remove('winner');
+            document.getElementById('sweCard').classList.remove('winner');
+            document.querySelector('#gptCard .model-name').textContent = 'GPT-5.1-Codex';
+            document.querySelector('#sweCard .model-name').textContent = 'SWE 1.5 Fast';
+            
+            try {
+                loadingText.textContent = 'Agent 1 is generating responses from GPT-5.1-Codex and SWE 1.5 Fast...';
+                
+                const response = await fetch('/api/compare', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt: userInput })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    loading.classList.remove('active');
+                    submitBtn.disabled = false;
+                    return;
+                }
+                
+                document.getElementById('gptResponse').textContent = data.gpt_response;
+                document.getElementById('sweResponse').textContent = data.swe_response;
+                
+                loadingText.textContent = 'Agent 2 is evaluating responses using Claude Sonnet 4.5...';
+                
+                // Wait a moment for effect
+                await new Promise(r => setTimeout(r, 500));
+                
+                document.getElementById('evaluationResult').textContent = data.evaluation;
+                
+                const winnerCard = data.best_model === 'GPT-5.1-Codex' ? 'gptCard' : 'sweCard';
+                const winnerBadge = data.best_model === 'GPT-5.1-Codex' ? 'GPT-5.1-Codex' : 'SWE 1.5 Fast';
+                
+                document.getElementById(winnerCard).classList.add('winner');
+                document.querySelector(`#${winnerCard} .model-name`).innerHTML = 
+                    winnerBadge + ' <span class="badge badge-winner">WINNER</span>';
+                
+                loading.classList.remove('active');
+                results.classList.add('active');
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+                loading.classList.remove('active');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

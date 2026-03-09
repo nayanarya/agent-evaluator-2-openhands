@@ -1,0 +1,59 @@
+[]
+title = "GitLeaks Configuration"
+[[rules]]
+    description = "AWS Access Key"
+    regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+    tags = ["key", "AWS"]
+
+[[rules]]
+    description = "AWS Secret Key"
+    regex = '''(?i)(aws(.{0,20})?(?-i)secret(.{0,20})?['\"][0-9a-zA-Z/+]{40}['\"]'''
+    tags = ["key", "AWS"]
+
+[[rules]]
+    description = "GitHub Token"
+    regex = '''gh[pousr]_[A-Za-z0-9_]{36,255}'''
+    tags = ["key", "GitHub"]
+
+[[rules]]
+    description = "OpenAI API Key"
+    regex = '''sk-[a-zA-Z0-9]{32,}'''
+    tags = ["key", "OpenAI"]
+
+[[rules]]
+    description = "Slack Token"
+    regex = '''xox[baprs]-([0-9a-zA-Z]{10,48})'''
+    tags = ["key", "Slack"]
+
+[[rules]]
+    description = "Private Key Block"
+    regex = '''-----BEGIN (RSA|EC|DSA|OPENSSH) PRIVATE KEY-----'''
+    tags = ["key", "Private"]
+
+[[rules]]
+    description = "Generic API Key"
+    regex = '''(?i)(api[_-]?key|apikey|secret[_-]?key)['\"][0-9a-zA-Z]{16,64}['\"]'''
+    tags = ["key", "API"]
+
+[[rules]]
+    description = "Password in URL"
+    regex = '''://[^/\s:@]+:[^/\s:@]+@[^/\s]+'''
+    tags = ["secret", "URL"]
+
+[allowlist]
+    description = "Allowlisted files"
+    files = [
+        "^*.md$",
+        "^LICENSE$",
+        "^.gitignore$",
+        "^server.log$"
+    ]
+
+[allowlist]
+    description = "Allowlisted patterns"
+    regexes = [
+        "dummy-key-for-demo",
+        "placeholder",
+        "your-key-here",
+        "xxxxx"
+    ]
